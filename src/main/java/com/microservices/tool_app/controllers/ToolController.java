@@ -26,7 +26,7 @@ public class ToolController {
     private final IToolService toolService;
     private final IUserService userService;
 
-    @PostMapping("/tool")
+    @PostMapping("/tools")
     public ResponseEntity<ResponseDto> createTool(@Valid @RequestBody ToolDto toolDto) {
 
         if (userService.getUserById(toolDto.getUserId()) == null) {
@@ -87,7 +87,7 @@ public class ToolController {
         return ResponseEntity.ok(tool);
     }
 
-    @PutMapping("/tool")
+    @PutMapping("/tools")
     public ResponseEntity<ResponseDto> updateTool(@Valid @RequestBody ToolDto toolDto) {
 
         boolean isUpdated = toolService.updateTool(toolDto);
@@ -104,7 +104,7 @@ public class ToolController {
         );
     }
 
-    @DeleteMapping("/tool/{id}")
+    @DeleteMapping("/tools/{id}")
     public ResponseEntity<ResponseDto> deleteTool(@Valid @PathVariable Long id) {
 
         boolean isDeleted = toolService.deleteTool(id);

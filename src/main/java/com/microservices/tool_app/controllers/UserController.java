@@ -1,14 +1,12 @@
 package com.microservices.tool_app.controllers;
 
 import com.microservices.tool_app.constants.UserConstants;
-import com.microservices.tool_app.dto.PaginatedResponseDto;
 import com.microservices.tool_app.dto.ResponseDto;
 import com.microservices.tool_app.dto.UserDto;
 import com.microservices.tool_app.exceptions.ResourceNotFoundException;
 import com.microservices.tool_app.service.IUserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +19,17 @@ import java.util.List;
 @RestController
 @RequestMapping(path="/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
-@CrossOrigin(origins = "*") // Improvement #7
+@CrossOrigin(origins = "*")
 public class UserController {
 
     private final IUserService iUsersService;
 
-    @PostMapping("/user")
+    @PostMapping("/users")
     public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody UserDto userDto) {
 
         iUsersService.createUser(userDto);
 
-        URI location = URI.create("/api/user/" + userDto.getUserId());
+        URI location = URI.create("/api/users/" + userDto.getUserId());
 
         return ResponseEntity
                 .created(location)
@@ -46,27 +44,7 @@ public class UserController {
         return ResponseEntity.ok(iUsersService.getAllUsers());
     }
 
-    @GetMapping("/users/paginated")
-    public ResponseEntity<PaginatedResponseDto<UserDto>> getUsersPaginated(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "userId") String sortBy) {
-
-        Page<UserDto> usersPage = iUsersService.getAllUsers(page, size, sortBy);
-
-        PaginatedResponseDto<UserDto> response = new PaginatedResponseDto<>(
-                usersPage.getContent(),
-                usersPage.getNumber(),
-                usersPage.getSize(),
-                usersPage.getTotalElements(),
-                usersPage.getTotalPages(),
-                usersPage.isLast()
-        );
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> getUserById(@Valid @PathVariable Long id) {
 
         UserDto user = iUsersService.getUserById(id);
@@ -91,8 +69,8 @@ public class UserController {
     }
 
     @GetMapping("/users/dob-range")
-    public ResponseEntity<List<UserDto>> getUsersByDOBRange(@Valid
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+    public ResponseEntity<List<UserDto>> getUsersByDOBRange(
+            @Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         if (startDate == null || endDate == null) {
@@ -110,9 +88,9 @@ public class UserController {
         return ResponseEntity.ok(iUsersService.getUsersByDOBRange(startDate, endDate));
     }
 
-    @PutMapping("/user/{id}")
-    public ResponseEntity<ResponseDto> updateUserDetails(@Valid
-            @PathVariable Long id,
+    @PutMapping("/users/{id}")
+    public ResponseEntity<ResponseDto> updateUserDetails(
+            @Valid @PathVariable Long id,
             @Valid @RequestBody UserDto userDto) {
 
         boolean isUpdated = iUsersService.updateUser(id, userDto);
@@ -129,7 +107,7 @@ public class UserController {
         );
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<ResponseDto> deleteUser(@Valid @PathVariable Long id) {
 
         boolean isDeleted = iUsersService.deleteUser(id);
