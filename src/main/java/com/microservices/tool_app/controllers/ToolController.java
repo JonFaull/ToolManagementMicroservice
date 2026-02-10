@@ -109,7 +109,7 @@ public class ToolController {
 
         boolean isDeleted = toolService.deleteTool(id);
 
-        //Test CI pipelinettttttgggktgggt5ttkkt.
+        //Test CI pipelinetttfrftttgggktgggt5ttkkt.
 
         if (!isDeleted) {
             throw new ResourceNotFoundException("Tool not found with ID: " + id);
