@@ -17,6 +17,14 @@ pipeline {
             }
         }
 
+        stage('Static Code Analysis') {
+            steps {
+                withSonarQubeEnv('MySonarQubeServer') {
+                    sh 'mvn clean verify sonar:sonar'
+                }
+            }
+        }
+
         stage('Build with Maven') {
             steps {
                 sh 'mvn clean package -DskipTests=false'
