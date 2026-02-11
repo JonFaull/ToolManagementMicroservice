@@ -2,6 +2,7 @@ package com.microservices.tool_app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.tool_app.dto.UserDto;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserControllerIntegrationTest {
+@Transactional
+class UserControllerIntegrationTest extends BaseIntegrationTest{
 
     @Autowired
     private MockMvc mockMvc;
