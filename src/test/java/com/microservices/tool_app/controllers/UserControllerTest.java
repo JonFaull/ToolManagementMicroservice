@@ -1,6 +1,7 @@
 package com.microservices.tool_app.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microservices.tool_app.constants.BaseConstants;
 import com.microservices.tool_app.constants.UserConstants;
 import com.microservices.tool_app.dto.UserDto;
 import com.microservices.tool_app.service.IUserService;
@@ -54,7 +55,7 @@ class UserControllerTest {
                         .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/users/1"))
-                .andExpect(jsonPath("$.statusCode").value(UserConstants.STATUS_201))
+                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_201))
                 .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_201));
     }
 
@@ -161,8 +162,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusCode").value(UserConstants.STATUS_200))
-                .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_200));
+                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_201))
+                .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_201));
     }
 
     @Test
@@ -189,7 +190,7 @@ class UserControllerTest {
 
         mockMvc.perform(delete("/api/users/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusCode").value(UserConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_200))
                 .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));
     }
 

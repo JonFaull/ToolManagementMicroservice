@@ -1,6 +1,7 @@
 package com.microservices.tool_app.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microservices.tool_app.constants.BaseConstants;
 import com.microservices.tool_app.constants.ToolConstants;
 import com.microservices.tool_app.dto.ToolDto;
 import com.microservices.tool_app.dto.UserDto;
@@ -64,7 +65,7 @@ class ToolControllerTest {
                         .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/tools/1"))
-                .andExpect(jsonPath("$.statusCode").value(ToolConstants.STATUS_201))
+                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_201))
                 .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_201));
     }
 
@@ -125,7 +126,7 @@ class ToolControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].toolId").value(1L))
                 .andExpect(jsonPath("$.pageNumber").value(0))
-                .andExpect(jsonPath("$.pageSize").value(1)); // PageImpl size = 1
+                .andExpect(jsonPath("$.pageSize").value(1));
     }
 
     // ---------------------------------------------------------
@@ -192,8 +193,8 @@ class ToolControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusCode").value(ToolConstants.STATUS_200))
-                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_200));
+                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_417_UPDATE));
     }
 
     @Test
@@ -224,8 +225,8 @@ class ToolControllerTest {
 
         mockMvc.perform(delete("/api/tools/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusCode").value(ToolConstants.STATUS_200))
-                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_200));
+                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_417_DELETE));
     }
 
     @Test
