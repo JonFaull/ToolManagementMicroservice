@@ -162,8 +162,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_201))
-                .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_201));
+                .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_200_UPDATE));
     }
 
     @Test
@@ -191,7 +191,7 @@ class UserControllerTest {
         mockMvc.perform(delete("/api/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_200))
-                .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));
+                .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_200_DELETE));
     }
 
     @Test
