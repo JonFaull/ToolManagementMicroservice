@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface IUserService {
-    void createUser(UserDto userDto);
+    UserDto createUser(UserDto userDto);
     List<UserDto> getAllUsers();
     Page<UserDto> getAllUsers(int page, int size, String sortBy);
     UserDto getUserById(Long id);

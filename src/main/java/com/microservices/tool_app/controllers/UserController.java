@@ -28,9 +28,10 @@ public class UserController {
     @PostMapping("/users")
     public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody UserDto userDto) {
 
-        iUsersService.createUser(userDto);
+        // Let the service return the saved DTO with ID
+        UserDto savedUser = iUsersService.createUser(userDto);
 
-        URI location = URI.create("/api/users/" + userDto.getUserId());
+        URI location = URI.create("/api/users/" + savedUser.getUserId());
 
         return ResponseEntity
                 .created(location)
@@ -39,6 +40,7 @@ public class UserController {
                         UserConstants.MESSAGE_201
                 ));
     }
+
 
     @GetMapping("/users")
     public ResponseEntity<List<UserDto>> getUsers() {

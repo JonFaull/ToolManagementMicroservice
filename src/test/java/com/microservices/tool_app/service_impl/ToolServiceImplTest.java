@@ -63,6 +63,8 @@ class ToolServiceImplTest {
     void createTool_savesToolSuccessfully() {
         when(usersRepository.findById(10L)).thenReturn(Optional.of(user));
 
+        when(toolsRepository.save(any(Tool.class))).thenReturn(tool);
+
         toolService.createTool(toolDto);
 
         ArgumentCaptor<Tool> captor = ArgumentCaptor.forClass(Tool.class);
@@ -74,6 +76,7 @@ class ToolServiceImplTest {
         assertThat(saved.getUser()).isEqualTo(user);
         assertThat(saved.getCreatedAt()).isNotNull();
     }
+
 
     @Test
     void createTool_throwsWhenUserNotFound() {

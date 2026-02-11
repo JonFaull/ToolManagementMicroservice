@@ -46,9 +46,13 @@ class UserControllerTest {
     // ---------------------------------------------------------
     @Test
     void createUser_returns201() throws Exception {
-        UserDto dto = buildValidUser();
+        UserDto inputDto = buildValidUser();
+        inputDto.setUserId(null); // simulate input with no ID
+        UserDto savedDto = buildValidUser(); // this one has ID 1
 
-        String json = objectMapper.writeValueAsString(dto);
+        when(userService.createUser(any(UserDto.class))).thenReturn(savedDto);
+
+        String json = objectMapper.writeValueAsString(inputDto);
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -58,6 +62,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_201))
                 .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_201));
     }
+
 
     // ---------------------------------------------------------
     // GET ALL USERS

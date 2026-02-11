@@ -53,7 +53,7 @@ class UserServiceImplTest {
     void createUser_savesUserSuccessfully() {
         when(usersRepository.save(any(User.class))).thenReturn(user);
 
-        userService.createUser(userDto);
+        UserDto resultDto = userService.createUser(userDto);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(usersRepository).save(captor.capture());
@@ -63,7 +63,11 @@ class UserServiceImplTest {
         assertThat(saved.getEmail()).isEqualTo("john@example.com");
         assertThat(saved.getDateOfBirth()).isEqualTo(LocalDate.of(1990, 1, 1));
         assertThat(saved.getCreatedAt()).isNotNull();
+
+        // also check that returned DTO has the generated ID
+        assertThat(resultDto.getUserId()).isEqualTo(1L);
     }
+
 
     // ---------------------------------------------------------
     // GET ALL USERS

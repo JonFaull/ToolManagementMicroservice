@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
 public class ToolController {
@@ -34,12 +34,11 @@ public class ToolController {
             throw new ResourceNotFoundException("User with ID " + toolDto.getUserId() + " does not exist");
         }
 
+        // ✅ Use the saved ToolDto returned from the service
+        ToolDto createdTool = toolService.createTool(toolDto);
 
-
-
-        toolService.createTool(toolDto);
-
-        URI location = URI.create("/api/tools/" + toolDto.getToolId());
+        // ✅ Build Location header from the generated ID
+        URI location = URI.create("/api/tools/" + createdTool.getToolId());
 
         return ResponseEntity
                 .created(location)
