@@ -1,19 +1,21 @@
 CREATE TABLE IF NOT EXISTS users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+                                     user_id INT AUTO_INCREMENT PRIMARY KEY,
+                                     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     date_of_birth DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
 
 CREATE TABLE IF NOT EXISTS tools (
-    user_id INT NOT NULL,
-    tool_id INT AUTO_INCREMENT PRIMARY KEY,
-    tool_name VARCHAR(100) NOT NULL,
+                                     user_id INT NOT NULL,
+                                     tool_id INT AUTO_INCREMENT PRIMARY KEY,
+                                     tool_name VARCHAR(100) NOT NULL,
     tool_type VARCHAR(200) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
 
+-- Drop the constraint if it exists, then add it
+ALTER TABLE tools DROP CONSTRAINT IF EXISTS fk_user_id;
 ALTER TABLE tools
     ADD CONSTRAINT fk_user_id
         FOREIGN KEY (user_id)
