@@ -61,6 +61,9 @@ class ToolControllerTest {
 
         when(userService.getUserById(10L)).thenReturn(user);
 
+        // ✅ ADD THIS MOCK
+        when(toolService.createTool(any(ToolDto.class))).thenReturn(dto);
+
         String json = objectMapper.writeValueAsString(dto);
 
         mockMvc.perform(post("/api/tools")
@@ -71,6 +74,7 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_201))
                 .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_201));
     }
+
 
     @Test
     void createTool_throws404_whenUserDoesNotExist() throws Exception {

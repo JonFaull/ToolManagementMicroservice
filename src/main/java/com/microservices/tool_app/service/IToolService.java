@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IToolService {
 
-    void createTool(ToolDto toolDto);
+    ToolDto createTool(ToolDto toolDto);
 
     List<ToolDto> getAllTools();
     Page<ToolDto> getAllTools(int page, int size, String sortBy);

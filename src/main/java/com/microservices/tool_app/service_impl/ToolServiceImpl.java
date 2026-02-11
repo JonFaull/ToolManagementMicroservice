@@ -25,19 +25,25 @@ public class ToolServiceImpl implements IToolService {
     private final ToolsRepository toolsRepository;
     private final UsersRepository usersRepository;
 
+    // ✅ FIXED: return ToolDto instead of void
     @Override
-    public void createTool(ToolDto dto) {
+    public ToolDto createTool(ToolDto dto) {
+
         Tool tool = new Tool();
         tool.setToolName(dto.getToolName());
         tool.setToolType(dto.getToolType());
+
         User user = usersRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         tool.setUser(user);
+        tool.setCreatedAt(LocalDateTime.now());
 
-        tool.setCreatedAt(LocalDateTime.now() );   // REQUIRED by SQL schema
+        // ✅ Save and capture generated ID
+        Tool savedTool = toolsRepository.save(tool);
 
-        toolsRepository.save(tool);
+        // ✅ Return DTO containing generated toolId
+        return ToolMapper.mapToToolsDto(savedTool);
     }
 
     @Override
@@ -57,7 +63,6 @@ public class ToolServiceImpl implements IToolService {
         return toolsPage.map(ToolMapper::mapToToolsDto);
     }
 
-
     @Override
     public ToolDto getToolById(Long id) {
         return toolsRepository.findById(id)
@@ -65,13 +70,13 @@ public class ToolServiceImpl implements IToolService {
                 .orElse(null);
     }
 
+    @Override
     public List<ToolDto> getToolsByUserId(Long id) {
         return toolsRepository.findByUser_UserId(id)
                 .stream()
                 .map(ToolMapper::mapToToolsDto)
                 .toList();
     }
-
 
     @Override
     public boolean updateTool(ToolDto dto) {
@@ -84,6 +89,7 @@ public class ToolServiceImpl implements IToolService {
         Tool tool = existingOpt.get();
         tool.setToolName(dto.getToolName());
         tool.setToolType(dto.getToolType());
+
         User user = usersRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
