@@ -1,10 +1,8 @@
-package com.microservices.tool_app.serviceImpl;
+package com.microservices.tool_app.service_impl;
 
 import com.microservices.tool_app.dto.ToolDto;
-import com.microservices.tool_app.dto.UserDto;
 import com.microservices.tool_app.entity.Tool;
 import com.microservices.tool_app.entity.User;
-import com.microservices.tool_app.mapper.ToolMapper;
 import com.microservices.tool_app.repository.ToolsRepository;
 import com.microservices.tool_app.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,6 +1,5 @@
-package com.microservices.tool_app.serviceImpl;
+package com.microservices.tool_app.service_impl;
 
-import com.microservices.tool_app.dto.ToolDto;
 import com.microservices.tool_app.dto.UserDto;
 import com.microservices.tool_app.entity.User;
 import com.microservices.tool_app.mapper.UserMapper;
@@ -28,7 +27,7 @@ public class UserServiceImpl implements IUserService {
     public void createUser(UserDto userDto){
         User user = UserMapper.mapToUsers(userDto, new User());
         user.setCreatedAt(LocalDateTime.now() );
-        User savedUser = usersRepository.save(user);
+        usersRepository.save(user);
     }
 
     @Override

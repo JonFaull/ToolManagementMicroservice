@@ -1,7 +1,6 @@
 package com.microservices.tool_app.service;
 
 import com.microservices.tool_app.dto.UserDto;
-import com.microservices.tool_app.entity.User;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;

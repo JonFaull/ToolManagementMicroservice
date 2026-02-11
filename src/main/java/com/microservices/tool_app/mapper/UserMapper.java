@@ -5,6 +5,8 @@ import com.microservices.tool_app.entity.User;
 
 public class UserMapper {
 
+    private UserMapper() {}
+
     public static UserDto mapToUsersDto(User user) {
         UserDto dto = new UserDto();
         dto.setUserId(user.getUserId());

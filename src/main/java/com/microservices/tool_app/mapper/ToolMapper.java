@@ -6,6 +6,8 @@ import com.microservices.tool_app.entity.User;
 
 public class ToolMapper {
 
+    private ToolMapper() {}
+
     public static ToolDto mapToToolsDto(Tool tool) {
         ToolDto dto = new ToolDto();
         dto.setToolId(tool.getToolId());
