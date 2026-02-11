@@ -1,4 +1,4 @@
-package com.microservices.tool_app.integration;
+package com.microservices.tool_app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.tool_app.dto.UserDto;

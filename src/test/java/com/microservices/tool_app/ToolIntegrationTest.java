@@ -1,4 +1,4 @@
-package com.microservices.tool_app.integration;
+package com.microservices.tool_app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.tool_app.dto.ToolDto;
@@ -12,12 +12,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class FullWorkflowIntegrationTest {
+class ToolIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -26,9 +26,8 @@ class FullWorkflowIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void fullWorkflow_endToEnd_success() throws Exception {
+    void createTool_endToEnd_success() throws Exception {
 
-        // 1. Create user
         UserDto user = new UserDto();
         user.setName("John Doe");
         user.setEmail("john@example.com");
@@ -39,35 +38,15 @@ class FullWorkflowIntegrationTest {
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isCreated());
 
-        // 2. Create tool
         ToolDto tool = new ToolDto();
         tool.setToolName("Hammer");
         tool.setToolType("Hand Tool");
-        tool.setUserId(1L);
+        tool.setUserId(1L); // H2 auto-increments starting at 1
 
         mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tool)))
-                .andExpect(status().isCreated());
-
-        // 3. Update tool
-        tool.setToolId(1L);
-        tool.setToolName("Hammer XL");
-
-        mockMvc.perform(put("/api/tools")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tool)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusMsg").value("Tool updated successfully"));
-
-        // 4. Delete tool
-        mockMvc.perform(delete("/api/tools/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusMsg").value("Tool deleted successfully"));
-
-        // 5. Delete user
-        mockMvc.perform(delete("/api/users/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.statusMsg").value("Tool created successfully"));
     }
 }

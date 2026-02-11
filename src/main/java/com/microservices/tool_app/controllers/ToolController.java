@@ -34,6 +34,9 @@ public class ToolController {
             throw new ResourceNotFoundException("User with ID " + toolDto.getUserId() + " does not exist");
         }
 
+
+
+
         toolService.createTool(toolDto);
 
         URI location = URI.create("/api/tools/" + toolDto.getToolId());
