@@ -100,7 +100,7 @@ public class ToolController {
         return ResponseEntity.ok(
                 new ResponseDto(
                         BaseConstants.STATUS_200,
-                        ToolConstants.MESSAGE_417_UPDATE   // or MESSAGE_200 if you add it
+                        ToolConstants.MESSAGE_200_UPDATE
                 )
         );
     }
@@ -117,7 +117,7 @@ public class ToolController {
         return ResponseEntity.ok(
                 new ResponseDto(
                         BaseConstants.STATUS_200,
-                        ToolConstants.MESSAGE_417_DELETE   // or a MESSAGE_200_DELETE constant
+                        ToolConstants.MESSAGE_200_DELETE
                 )
         );
     }

@@ -74,10 +74,6 @@ public class UserController {
             @Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        if (startDate == null || endDate == null) {
-            throw new IllegalArgumentException("Both startDate and endDate are required");
-        }
-
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("Start date must be before end date");
         }
@@ -103,7 +99,7 @@ public class UserController {
         return ResponseEntity.ok(
                 new ResponseDto(
                         BaseConstants.STATUS_200,
-                        UserConstants.MESSAGE_417_UPDATE   // or MESSAGE_200 if you prefer
+                        UserConstants.MESSAGE_200_UPDATE
                 )
         );
     }
@@ -120,9 +116,8 @@ public class UserController {
         return ResponseEntity.ok(
                 new ResponseDto(
                         BaseConstants.STATUS_200,
-                        UserConstants.MESSAGE_417_DELETE   // or "User deleted successfully"
+                        UserConstants.MESSAGE_200_DELETE
                 )
         );
     }
-
 }

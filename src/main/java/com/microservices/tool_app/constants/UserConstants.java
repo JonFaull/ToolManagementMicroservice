@@ -2,11 +2,14 @@ package com.microservices.tool_app.constants;
 
 public final class UserConstants {
 
-    private UserConstants() {
-        // Prevent instantiation
-    }
+    private UserConstants() {}
 
     public static final String MESSAGE_201 = "User created successfully";
+
+
+    public static final String MESSAGE_200_UPDATE = "User updated successfully";
+    public static final String MESSAGE_200_DELETE = "User deleted successfully";
+
 
     public static final String MESSAGE_404 = "User does not exist.";
     public static final String MESSAGE_400 = "Invalid user Id.";

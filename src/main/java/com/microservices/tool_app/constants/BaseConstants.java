@@ -2,9 +2,7 @@ package com.microservices.tool_app.constants;
 
 public final class BaseConstants {
 
-    private BaseConstants() {
-
-    }
+    private BaseConstants() {}
 
     public static final String STATUS_200 = "200";
     public static final String STATUS_201 = "201";
