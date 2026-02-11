@@ -3,7 +3,6 @@ package com.microservices.tool_app;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.tool_app.dto.ToolDto;
 import com.microservices.tool_app.dto.UserDto;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ToolControllerIntegrationTest extends BaseIntegrationTest {
 
@@ -48,22 +46,20 @@ class ToolControllerIntegrationTest extends BaseIntegrationTest {
 
     private Long extractIdFromLocation(MvcResult result) {
         String location = result.getResponse().getHeader("Location");
+        if (location == null || location.isBlank()) {
+            throw new IllegalStateException("Location header missing");
+        }
         return Long.valueOf(location.substring(location.lastIndexOf("/") + 1));
     }
 
     @Test
     void createTool_success() throws Exception {
-
-        // Create user
-        MvcResult userResult = mockMvc.perform(post("/api/users")
+        Long userId = extractIdFromLocation(mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
                 .andExpect(status().isCreated())
-                .andReturn();
+                .andReturn());
 
-        Long userId = extractIdFromLocation(userResult);
-
-        // Create tool
         mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildTool(userId))))
@@ -74,7 +70,6 @@ class ToolControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     void createTool_userNotFound() throws Exception {
         ToolDto dto = buildTool(999L);
-
         mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
@@ -95,26 +90,18 @@ class ToolControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void getToolById_success() throws Exception {
-
-        // Create user
-        MvcResult userResult = mockMvc.perform(post("/api/users")
+        Long userId = extractIdFromLocation(mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
                 .andExpect(status().isCreated())
-                .andReturn();
+                .andReturn());
 
-        Long userId = extractIdFromLocation(userResult);
-
-        // Create tool
-        MvcResult toolResult = mockMvc.perform(post("/api/tools")
+        Long toolId = extractIdFromLocation(mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildTool(userId))))
                 .andExpect(status().isCreated())
-                .andReturn();
+                .andReturn());
 
-        Long toolId = extractIdFromLocation(toolResult);
-
-        // Get tool
         mockMvc.perform(get("/api/tools/" + toolId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.toolName").value("Hammer"));
@@ -128,26 +115,18 @@ class ToolControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void updateTool_success() throws Exception {
-
-        // Create user
-        MvcResult userResult = mockMvc.perform(post("/api/users")
+        Long userId = extractIdFromLocation(mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
                 .andExpect(status().isCreated())
-                .andReturn();
+                .andReturn());
 
-        Long userId = extractIdFromLocation(userResult);
-
-        // Create tool
-        MvcResult toolResult = mockMvc.perform(post("/api/tools")
+        Long toolId = extractIdFromLocation(mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildTool(userId))))
                 .andExpect(status().isCreated())
-                .andReturn();
+                .andReturn());
 
-        Long toolId = extractIdFromLocation(toolResult);
-
-        // Update tool
         ToolDto updated = buildTool(userId);
         updated.setToolId(toolId);
         updated.setToolName("Hammer XL");
@@ -172,26 +151,18 @@ class ToolControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void deleteTool_success() throws Exception {
-
-        // Create user
-        MvcResult userResult = mockMvc.perform(post("/api/users")
+        Long userId = extractIdFromLocation(mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
                 .andExpect(status().isCreated())
-                .andReturn();
+                .andReturn());
 
-        Long userId = extractIdFromLocation(userResult);
-
-        // Create tool
-        MvcResult toolResult = mockMvc.perform(post("/api/tools")
+        Long toolId = extractIdFromLocation(mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildTool(userId))))
                 .andExpect(status().isCreated())
-                .andReturn();
+                .andReturn());
 
-        Long toolId = extractIdFromLocation(toolResult);
-
-        // Delete tool
         mockMvc.perform(delete("/api/tools/" + toolId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("Tool deleted successfully"));
