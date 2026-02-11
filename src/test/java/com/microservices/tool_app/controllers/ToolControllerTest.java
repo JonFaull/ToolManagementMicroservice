@@ -194,7 +194,7 @@ class ToolControllerTest {
                         .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_200))
-                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_417_UPDATE));
+                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_200_UPDATE));
     }
 
     @Test
@@ -226,7 +226,7 @@ class ToolControllerTest {
         mockMvc.perform(delete("/api/tools/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusCode").value(BaseConstants.STATUS_200))
-                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_417_DELETE));
+                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_200_DELETE));
     }
 
     @Test
