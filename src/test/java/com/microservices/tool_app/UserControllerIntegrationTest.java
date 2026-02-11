@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 
@@ -20,8 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-
-class UserControllerIntegrationTest extends BaseIntegrationTest{
+class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,6 +35,11 @@ class UserControllerIntegrationTest extends BaseIntegrationTest{
         dto.setEmail("john@example.com");
         dto.setDateOfBirth(LocalDate.of(1990, 1, 1));
         return dto;
+    }
+
+    private Long extractIdFromLocation(MvcResult result) {
+        String location = result.getResponse().getHeader("Location");
+        return Long.valueOf(location.substring(location.lastIndexOf("/") + 1));
     }
 
     @Test
@@ -54,12 +59,18 @@ class UserControllerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     void getUserById_success() throws Exception {
-        mockMvc.perform(post("/api/users")
+
+        // Create user
+        MvcResult result = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
 
-        mockMvc.perform(get("/api/users/1"))
+        Long userId = extractIdFromLocation(result);
+
+        // Get user
+        mockMvc.perform(get("/api/users/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("john@example.com"));
     }
@@ -72,6 +83,8 @@ class UserControllerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     void getUserByEmail_success() throws Exception {
+
+        // Create user
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -90,6 +103,8 @@ class UserControllerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     void getUsersByDOBRange_success() throws Exception {
+
+        // Create user
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -112,15 +127,21 @@ class UserControllerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     void updateUser_success() throws Exception {
-        mockMvc.perform(post("/api/users")
+
+        // Create user
+        MvcResult result = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
 
+        Long userId = extractIdFromLocation(result);
+
+        // Update user
         UserDto updated = buildUser();
         updated.setName("Updated Name");
 
-        mockMvc.perform(put("/api/users/1")
+        mockMvc.perform(put("/api/users/" + userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isOk())
@@ -137,12 +158,18 @@ class UserControllerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     void deleteUser_success() throws Exception {
-        mockMvc.perform(post("/api/users")
+
+        // Create user
+        MvcResult result = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
 
-        mockMvc.perform(delete("/api/users/1"))
+        Long userId = extractIdFromLocation(result);
+
+        // Delete user
+        mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));
     }

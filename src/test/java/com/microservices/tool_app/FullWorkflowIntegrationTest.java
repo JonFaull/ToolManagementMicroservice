@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 
-class FullWorkflowIntegrationTest extends BaseIntegrationTest{
+class FullWorkflowIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,24 +39,34 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest{
         user.setEmail("john@example.com");
         user.setDateOfBirth(LocalDate.of(1990, 1, 1));
 
-        mockMvc.perform(post("/api/users")
+        MvcResult result = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        // Extract userId from Location header
+        String location = result.getResponse().getHeader("Location");
+        Long userId = Long.valueOf(location.substring(location.lastIndexOf("/") + 1));
 
         // 2. Create tool
         ToolDto tool = new ToolDto();
         tool.setToolName("Hammer");
         tool.setToolType("Hand Tool");
-        tool.setUserId(1L);
+        tool.setUserId(userId);
 
-        mockMvc.perform(post("/api/tools")
+        MvcResult toolResult = mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tool)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        // Extract toolId
+        String toolLocation = toolResult.getResponse().getHeader("Location");
+        Long toolId = Long.valueOf(toolLocation.substring(toolLocation.lastIndexOf("/") + 1));
 
         // 3. Update tool
-        tool.setToolId(1L);
+        tool.setToolId(toolId);
         tool.setToolName("Hammer XL");
 
         mockMvc.perform(put("/api/tools")
@@ -65,12 +76,12 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest{
                 .andExpect(jsonPath("$.statusMsg").value("Tool updated successfully"));
 
         // 4. Delete tool
-        mockMvc.perform(delete("/api/tools/1"))
+        mockMvc.perform(delete("/api/tools/" + toolId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("Tool deleted successfully"));
 
         // 5. Delete user
-        mockMvc.perform(delete("/api/users/1"))
+        mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));
     }
