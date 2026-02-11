@@ -1,5 +1,6 @@
 package com.microservices.tool_app.controllers;
 
+import com.microservices.tool_app.constants.BaseConstants;
 import com.microservices.tool_app.constants.UserConstants;
 import com.microservices.tool_app.dto.ResponseDto;
 import com.microservices.tool_app.dto.UserDto;
@@ -34,7 +35,7 @@ public class UserController {
         return ResponseEntity
                 .created(location)
                 .body(new ResponseDto(
-                        UserConstants.STATUS_201,
+                        BaseConstants.STATUS_201,
                         UserConstants.MESSAGE_201
                 ));
     }
@@ -101,8 +102,8 @@ public class UserController {
 
         return ResponseEntity.ok(
                 new ResponseDto(
-                        UserConstants.STATUS_200,
-                        UserConstants.MESSAGE_200
+                        BaseConstants.STATUS_200,
+                        UserConstants.MESSAGE_417_UPDATE   // or MESSAGE_200 if you prefer
                 )
         );
     }
@@ -118,8 +119,8 @@ public class UserController {
 
         return ResponseEntity.ok(
                 new ResponseDto(
-                        UserConstants.STATUS_200,
-                        "User deleted successfully"
+                        BaseConstants.STATUS_200,
+                        UserConstants.MESSAGE_417_DELETE   // or "User deleted successfully"
                 )
         );
     }

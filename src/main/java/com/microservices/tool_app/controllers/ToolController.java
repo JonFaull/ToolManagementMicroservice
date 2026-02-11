@@ -1,5 +1,6 @@
 package com.microservices.tool_app.controllers;
 
+import com.microservices.tool_app.constants.BaseConstants;
 import com.microservices.tool_app.constants.ToolConstants;
 import com.microservices.tool_app.dto.PaginatedResponseDto;
 import com.microservices.tool_app.dto.ResponseDto;
@@ -40,7 +41,7 @@ public class ToolController {
         return ResponseEntity
                 .created(location)
                 .body(new ResponseDto(
-                        ToolConstants.STATUS_201,
+                        BaseConstants.STATUS_201,
                         ToolConstants.MESSAGE_201
                 ));
     }
@@ -98,8 +99,8 @@ public class ToolController {
 
         return ResponseEntity.ok(
                 new ResponseDto(
-                        ToolConstants.STATUS_200,
-                        ToolConstants.MESSAGE_200
+                        BaseConstants.STATUS_200,
+                        ToolConstants.MESSAGE_417_UPDATE   // or MESSAGE_200 if you add it
                 )
         );
     }
@@ -109,16 +110,14 @@ public class ToolController {
 
         boolean isDeleted = toolService.deleteTool(id);
 
-        //Test Cklkl
-
         if (!isDeleted) {
             throw new ResourceNotFoundException("Tool not found with ID: " + id);
         }
 
         return ResponseEntity.ok(
                 new ResponseDto(
-                        ToolConstants.STATUS_200,
-                        ToolConstants.MESSAGE_200
+                        BaseConstants.STATUS_200,
+                        ToolConstants.MESSAGE_417_DELETE   // or a MESSAGE_200_DELETE constant
                 )
         );
     }
