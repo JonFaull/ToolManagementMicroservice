@@ -2,9 +2,7 @@ package com.microservices.tool_app.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.tool_app.constants.UserConstants;
-import com.microservices.tool_app.dto.ResponseDto;
 import com.microservices.tool_app.dto.UserDto;
-import com.microservices.tool_app.exceptions.ResourceNotFoundException;
 import com.microservices.tool_app.service.IUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,6 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // Utility method to build a valid UserDto
     private UserDto buildValidUser() {
         UserDto user = new UserDto();
         user.setUserId(1L);
@@ -57,8 +54,8 @@ class UserControllerTest {
                         .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/users/1"))
-                .andExpect(jsonPath("$.status").value(UserConstants.STATUS_201))
-                .andExpect(jsonPath("$.message").value(UserConstants.MESSAGE_201));
+                .andExpect(jsonPath("$.statusCode").value(UserConstants.STATUS_201))
+                .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_201));
     }
 
     // ---------------------------------------------------------
@@ -91,7 +88,8 @@ class UserControllerTest {
         when(userService.getUserById(99L)).thenReturn(null);
 
         mockMvc.perform(get("/api/users/99"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
     // ---------------------------------------------------------
@@ -111,7 +109,8 @@ class UserControllerTest {
         when(userService.getUserByEmail("missing@example.com")).thenReturn(null);
 
         mockMvc.perform(get("/api/users/email/missing@example.com"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
     // ---------------------------------------------------------
@@ -134,7 +133,8 @@ class UserControllerTest {
         mockMvc.perform(get("/api/users/dob-range")
                         .param("startDate", "2025-01-01")
                         .param("endDate", "2020-01-01"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"));
     }
 
     @Test
@@ -142,7 +142,8 @@ class UserControllerTest {
         mockMvc.perform(get("/api/users/dob-range")
                         .param("startDate", "2050-01-01")
                         .param("endDate", "2051-01-01"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"));
     }
 
     // ---------------------------------------------------------
@@ -160,8 +161,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(UserConstants.STATUS_200))
-                .andExpect(jsonPath("$.message").value(UserConstants.MESSAGE_200));
+                .andExpect(jsonPath("$.statusCode").value(UserConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_200));
     }
 
     @Test
@@ -175,7 +176,8 @@ class UserControllerTest {
         mockMvc.perform(put("/api/users/99")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
     // ---------------------------------------------------------
@@ -187,8 +189,8 @@ class UserControllerTest {
 
         mockMvc.perform(delete("/api/users/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(UserConstants.STATUS_200))
-                .andExpect(jsonPath("$.message").value("User deleted successfully"));
+                .andExpect(jsonPath("$.statusCode").value(UserConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));
     }
 
     @Test
@@ -196,6 +198,7 @@ class UserControllerTest {
         when(userService.deleteUser(99L)).thenReturn(false);
 
         mockMvc.perform(delete("/api/users/99"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 }

@@ -2,15 +2,11 @@ package com.microservices.tool_app.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.tool_app.constants.ToolConstants;
-import com.microservices.tool_app.dto.PaginatedResponseDto;
-import com.microservices.tool_app.dto.ResponseDto;
 import com.microservices.tool_app.dto.ToolDto;
 import com.microservices.tool_app.dto.UserDto;
-import com.microservices.tool_app.exceptions.ResourceNotFoundException;
 import com.microservices.tool_app.service.IToolService;
 import com.microservices.tool_app.service.IUserService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -53,7 +49,6 @@ class ToolControllerTest {
         dto.setToolType("Hand Tool");
         dto.setUserId(10L);
 
-        // Build a valid UserDto
         UserDto user = new UserDto();
         user.setUserId(10L);
         user.setName("John Doe");
@@ -69,15 +64,16 @@ class ToolControllerTest {
                         .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/tools/1"))
-                .andExpect(jsonPath("$.status").value(ToolConstants.STATUS_201))
-                .andExpect(jsonPath("$.message").value(ToolConstants.MESSAGE_201));
+                .andExpect(jsonPath("$.statusCode").value(ToolConstants.STATUS_201))
+                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_201));
     }
-
 
     @Test
     void createTool_throws404_whenUserDoesNotExist() throws Exception {
         ToolDto dto = new ToolDto();
         dto.setToolId(1L);
+        dto.setToolName("Hammer");
+        dto.setToolType("Hand Tool");
         dto.setUserId(99L);
 
         when(userService.getUserById(99L)).thenReturn(null);
@@ -87,7 +83,8 @@ class ToolControllerTest {
         mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
     // ---------------------------------------------------------
@@ -98,6 +95,8 @@ class ToolControllerTest {
         ToolDto tool = new ToolDto();
         tool.setToolId(1L);
         tool.setToolName("Saw");
+        tool.setToolType("Hand Tool");
+        tool.setUserId(10L);
 
         when(toolService.getAllTools()).thenReturn(List.of(tool));
 
@@ -115,6 +114,8 @@ class ToolControllerTest {
         ToolDto tool = new ToolDto();
         tool.setToolId(1L);
         tool.setToolName("Drill");
+        tool.setToolType("Power Tool");
+        tool.setUserId(10L);
 
         Page<ToolDto> page = new PageImpl<>(List.of(tool));
 
@@ -124,7 +125,7 @@ class ToolControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].toolId").value(1L))
                 .andExpect(jsonPath("$.pageNumber").value(0))
-                .andExpect(jsonPath("$.pageSize").value(10));
+                .andExpect(jsonPath("$.pageSize").value(1)); // PageImpl size = 1
     }
 
     // ---------------------------------------------------------
@@ -134,6 +135,9 @@ class ToolControllerTest {
     void getToolsForUser_returnsList() throws Exception {
         ToolDto tool = new ToolDto();
         tool.setToolId(1L);
+        tool.setToolName("Hammer");
+        tool.setToolType("Hand Tool");
+        tool.setUserId(5L);
 
         when(toolService.getToolsByUserId(5L)).thenReturn(List.of(tool));
 
@@ -149,6 +153,9 @@ class ToolControllerTest {
     void getToolById_returnsTool() throws Exception {
         ToolDto tool = new ToolDto();
         tool.setToolId(1L);
+        tool.setToolName("Hammer");
+        tool.setToolType("Hand Tool");
+        tool.setUserId(10L);
 
         when(toolService.getToolById(1L)).thenReturn(tool);
 
@@ -162,7 +169,8 @@ class ToolControllerTest {
         when(toolService.getToolById(99L)).thenReturn(null);
 
         mockMvc.perform(get("/api/tools/99"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
     // ---------------------------------------------------------
@@ -172,8 +180,11 @@ class ToolControllerTest {
     void updateTool_returns200_whenUpdated() throws Exception {
         ToolDto dto = new ToolDto();
         dto.setToolId(1L);
+        dto.setToolName("Hammer");
+        dto.setToolType("Hand Tool");
+        dto.setUserId(10L);
 
-        when(toolService.updateTool(dto)).thenReturn(true);
+        when(toolService.updateTool(any(ToolDto.class))).thenReturn(true);
 
         String json = objectMapper.writeValueAsString(dto);
 
@@ -181,23 +192,27 @@ class ToolControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(ToolConstants.STATUS_200))
-                .andExpect(jsonPath("$.message").value(ToolConstants.MESSAGE_200));
+                .andExpect(jsonPath("$.statusCode").value(ToolConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_200));
     }
 
     @Test
     void updateTool_throws404_whenNotFound() throws Exception {
         ToolDto dto = new ToolDto();
         dto.setToolId(99L);
+        dto.setToolName("Hammer");
+        dto.setToolType("Hand Tool");
+        dto.setUserId(10L);
 
-        when(toolService.updateTool(dto)).thenReturn(false);
+        when(toolService.updateTool(any(ToolDto.class))).thenReturn(false);
 
         String json = objectMapper.writeValueAsString(dto);
 
         mockMvc.perform(put("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
     // ---------------------------------------------------------
@@ -209,8 +224,8 @@ class ToolControllerTest {
 
         mockMvc.perform(delete("/api/tools/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(ToolConstants.STATUS_200))
-                .andExpect(jsonPath("$.message").value(ToolConstants.MESSAGE_200));
+                .andExpect(jsonPath("$.statusCode").value(ToolConstants.STATUS_200))
+                .andExpect(jsonPath("$.statusMsg").value(ToolConstants.MESSAGE_200));
     }
 
     @Test
@@ -218,6 +233,7 @@ class ToolControllerTest {
         when(toolService.deleteTool(99L)).thenReturn(false);
 
         mockMvc.perform(delete("/api/tools/99"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 }
