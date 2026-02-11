@@ -26,8 +26,9 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void createUser(UserDto userDto){
         User user = UserMapper.mapToUsers(userDto, new User());
-        user.setCreatedAt(LocalDateTime.now() );
-        usersRepository.save(user);
+        user.setCreatedAt(LocalDateTime.now());
+        User savedUser = usersRepository.save(user);  // CAPTURE the saved entity
+        userDto.setUserId(savedUser.getUserId());     // UPDATE the DTO with the generated ID
     }
 
     @Override
