@@ -17,10 +17,15 @@ pipeline {
             }
         }
 
-        stage('Static Code Analysis') {
+        stage('Build + Test + Sonar') {
             steps {
                 withSonarQubeEnv('MySonarQubeServer') {
                     sh 'mvn clean verify sonar:sonar'
+                }
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
                 }
             }
         }
@@ -33,27 +38,28 @@ pipeline {
             }
         }
 
-
-        stage('Build with Maven') {
+        stage('Archive Artifact') {
             steps {
-                sh 'mvn clean package -DskipTests=false'
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
 
-        stage('Run Tests') {
+        stage('Build Docker Image') {
             steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
+                script {
+                    dockerImage = docker.build("jonfaull/tool-app:${env.BUILD_NUMBER}")
                 }
             }
         }
 
-        stage('Archive Artifact') {
+        stage('Push Docker Image') {
             steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
+                        dockerImage.push("${env.BUILD_NUMBER}")
+                        dockerImage.push("latest")
+                    }
+                }
             }
         }
     }
