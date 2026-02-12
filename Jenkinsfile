@@ -45,19 +45,30 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps {
-                script {
-                    dockerImage = docker.build("jonfaull/tool-app:${env.BUILD_NUMBER}")
+            agent {
+                docker {
+                    image 'docker:24.0.5-dind'
+                    args '--privileged'
                 }
+            }
+            steps {
+                sh 'docker build -t jonfaull/tool-app:${BUILD_NUMBER} .'
             }
         }
 
         stage('Push Docker Image') {
+            agent {
+                docker {
+                    image 'docker:24.0.5-dind'
+                    args '--privileged'
+                }
+            }
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-                        dockerImage.push("${env.BUILD_NUMBER}")
-                        dockerImage.push("latest")
+                        sh 'docker push jonfaull/tool-app:${BUILD_NUMBER}'
+                        sh 'docker tag jonfaull/tool-app:${BUILD_NUMBER} jonfaull/tool-app:latest'
+                        sh 'docker push jonfaull/tool-app:latest'
                     }
                 }
             }
