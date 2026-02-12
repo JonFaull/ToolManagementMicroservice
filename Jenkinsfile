@@ -73,7 +73,7 @@ pipeline {
                     sh """
                         docker run -d \
                         --name ${CONTAINER_NAME} \
-                        -p 8081:8080 \
+                        -p 8081:8082 \
                         ${DOCKER_IMAGE}:latest
                     """
                 }
