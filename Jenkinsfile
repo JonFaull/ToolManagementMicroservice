@@ -1,35 +1,29 @@
 pipeline {
     agent any
-
     triggers {
         githubPush()
     }
-
     tools {
         maven 'maven-3.9'
     }
-
+    environment {
+        DOCKER_IMAGE = 'tool-management-app'
+        DOCKER_TAG = "${BUILD_NUMBER}"
+        CONTAINER_NAME = 'tool-management-container'
+    }
     stages {
-
         stage('Clone Repository') {
             steps {
                 git branch: 'master', url: 'https://github.com/JonFaull/ToolManagementMicroservice.git'
             }
         }
-
-        stage('Build + Test + Sonar') {
+        stage('Static Code Analysis') {
             steps {
                 withSonarQubeEnv('MySonarQubeServer') {
                     sh 'mvn clean verify sonar:sonar'
                 }
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
         }
-
         stage('Quality Gate') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
@@ -37,41 +31,61 @@ pipeline {
                 }
             }
         }
-
+        stage('Build with Maven') {
+            steps {
+                sh 'mvn clean package -DskipTests=false'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
-
         stage('Build Docker Image') {
-            agent {
-                docker {
-                    image 'docker:24.0.5-dind'
-                    args '--privileged'
-                }
-            }
-            steps {
-                sh 'docker build -t jonfaull/tool-app:${BUILD_NUMBER} .'
-            }
-        }
-
-        stage('Push Docker Image') {
-            agent {
-                docker {
-                    image 'docker:24.0.5-dind'
-                    args '--privileged'
-                }
-            }
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-                        sh 'docker push jonfaull/tool-app:${BUILD_NUMBER}'
-                        sh 'docker tag jonfaull/tool-app:${BUILD_NUMBER} jonfaull/tool-app:latest'
-                        sh 'docker push jonfaull/tool-app:latest'
-                    }
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                    sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
                 }
             }
+        }
+        stage('Stop Old Container') {
+            steps {
+                script {
+                    sh "docker stop ${CONTAINER_NAME} || true"
+                    sh "docker rm ${CONTAINER_NAME} || true"
+                }
+            }
+        }
+        stage('Deploy Container') {
+            steps {
+                script {
+                    sh """
+                        docker run -d \
+                        --name ${CONTAINER_NAME} \
+                        -p 8080:8080 \
+                        ${DOCKER_IMAGE}:latest
+                    """
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo "Deployment successful! Application is running at http://localhost:8080"
+        }
+        failure {
+            echo "Pipeline failed. Check logs for details."
         }
     }
 }
