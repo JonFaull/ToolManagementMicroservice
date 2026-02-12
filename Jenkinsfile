@@ -73,7 +73,7 @@ pipeline {
                     sh """
                         docker run -d \
                         --name ${CONTAINER_NAME} \
-                        -p 8081:8081 \
+                        -p 8081:8080 \
                         ${DOCKER_IMAGE}:latest
                     """
                 }
@@ -82,7 +82,7 @@ pipeline {
     }
     post {
         success {
-            echo "Deployment successful! Application is running at http://localhost:8081"
+            echo "Deployment successful! Application is running at http://localhost:8080"
         }
         failure {
             echo "Pipeline failed. Check logs for details."
