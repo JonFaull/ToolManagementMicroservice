@@ -33,6 +33,7 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest {
         dto.setName("John Doe");
         dto.setEmail("john@example.com");
         dto.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        //Small commit
         return dto;
     }
 
