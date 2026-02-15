@@ -34,9 +34,7 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest {
         dto.setEmail("john@example.com");
         dto.setDateOfBirth(LocalDate.of(1990, 1, 1));
 
-        return new UserDto();
-
-        //return dto;
+        return dto;
     }
 
     private ToolDto buildTool(Long userId) {
