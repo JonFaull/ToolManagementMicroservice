@@ -82,7 +82,7 @@ pipeline {
     }
     post {
         success {
-            echo "Deployment successful! Application is running at http://localhost:8080"
+            echo "Deployment successful! Application is running at http://localhost:8081"
         }
         failure {
             echo "Pipeline failed. Check logs for details."
