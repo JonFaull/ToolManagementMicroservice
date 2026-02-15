@@ -30,9 +30,6 @@ class ToolControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
-
-
     @MockBean
     private IToolService toolService;
 
@@ -42,9 +39,6 @@ class ToolControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // ---------------------------------------------------------
-    // CREATE TOOL
-    // ---------------------------------------------------------
     @Test
     void createTool_returns201_whenUserExists() throws Exception {
         ToolDto dto = new ToolDto();
@@ -61,7 +55,6 @@ class ToolControllerTest {
 
         when(userService.getUserById(10L)).thenReturn(user);
 
-        // ✅ ADD THIS MOCK
         when(toolService.createTool(any(ToolDto.class))).thenReturn(dto);
 
         String json = objectMapper.writeValueAsString(dto);
@@ -95,9 +88,6 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
-    // ---------------------------------------------------------
-    // GET ALL TOOLS
-    // ---------------------------------------------------------
     @Test
     void getAllTools_returnsList() throws Exception {
         ToolDto tool = new ToolDto();
@@ -114,9 +104,6 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$[0].toolName").value("Saw"));
     }
 
-    // ---------------------------------------------------------
-    // GET PAGINATED TOOLS
-    // ---------------------------------------------------------
     @Test
     void getAllToolsPaginated_returnsPaginatedResponse() throws Exception {
         ToolDto tool = new ToolDto();
@@ -136,9 +123,6 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$.pageSize").value(1));
     }
 
-    // ---------------------------------------------------------
-    // GET TOOLS FOR USER
-    // ---------------------------------------------------------
     @Test
     void getToolsForUser_returnsList() throws Exception {
         ToolDto tool = new ToolDto();
@@ -154,9 +138,6 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$[0].toolId").value(1L));
     }
 
-    // ---------------------------------------------------------
-    // GET TOOL BY ID
-    // ---------------------------------------------------------
     @Test
     void getToolById_returnsTool() throws Exception {
         ToolDto tool = new ToolDto();
@@ -181,9 +162,6 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
-    // ---------------------------------------------------------
-    // UPDATE TOOL
-    // ---------------------------------------------------------
     @Test
     void updateTool_returns200_whenUpdated() throws Exception {
         ToolDto dto = new ToolDto();
@@ -223,9 +201,6 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
-    // ---------------------------------------------------------
-    // DELETE TOOL
-    // ---------------------------------------------------------
     @Test
     void deleteTool_returns200_whenDeleted() throws Exception {
         when(toolService.deleteTool(1L)).thenReturn(true);

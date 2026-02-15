@@ -87,9 +87,6 @@ class ToolServiceImplTest {
                 .hasMessageContaining("User not found");
     }
 
-    // ---------------------------------------------------------
-    // GET ALL TOOLS
-    // ---------------------------------------------------------
     @Test
     void getAllTools_returnsMappedDtos() {
         when(toolsRepository.findAll()).thenReturn(List.of(tool));
@@ -100,9 +97,6 @@ class ToolServiceImplTest {
         assertThat(result.get(0).getToolName()).isEqualTo("Hammer");
     }
 
-    // ---------------------------------------------------------
-    // GET PAGINATED TOOLS
-    // ---------------------------------------------------------
     @Test
     void getAllToolsPaginated_returnsMappedPage() {
         Page<Tool> page = new PageImpl<>(List.of(tool));

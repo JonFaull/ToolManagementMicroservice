@@ -30,7 +30,6 @@ public class UserServiceImpl implements IUserService {
 
         User savedUser = usersRepository.save(user);
 
-        // Return the saved DTO instead of mutating the input
         return UserMapper.mapToUsersDto(savedUser);
     }
 

@@ -28,7 +28,6 @@ public class UserController {
     @PostMapping("/users")
     public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody UserDto userDto) {
 
-        // Let the service return the saved DTO with ID
         UserDto savedUser = iUsersService.createUser(userDto);
 
         URI location = URI.create("/api/users/" + savedUser.getUserId());

@@ -60,7 +60,6 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     void getUserById_success() throws Exception {
 
-        // Create user
         MvcResult result = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -69,7 +68,6 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         Long userId = extractIdFromLocation(result);
 
-        // Get user
         mockMvc.perform(get("/api/users/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("john@example.com"));
@@ -84,7 +82,6 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     void getUserByEmail_success() throws Exception {
 
-        // Create user
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -104,7 +101,6 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     void getUsersByDOBRange_success() throws Exception {
 
-        // Create user
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -128,7 +124,6 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     void updateUser_success() throws Exception {
 
-        // Create user
         MvcResult result = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -159,7 +154,6 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     void deleteUser_success() throws Exception {
 
-        // Create user
         MvcResult result = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -168,7 +162,6 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         Long userId = extractIdFromLocation(result);
 
-        // Delete user
         mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));

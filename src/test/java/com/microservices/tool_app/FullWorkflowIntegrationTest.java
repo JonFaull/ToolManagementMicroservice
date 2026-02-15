@@ -55,7 +55,6 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest {
     @Test
     void fullWorkflow_endToEnd_success() throws Exception {
 
-        // 1. Create user
         MvcResult userResult = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildUser())))
@@ -64,7 +63,6 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest {
 
         Long userId = extractIdFromLocation(userResult);
 
-        // 2. Create tool
         MvcResult toolResult = mockMvc.perform(post("/api/tools")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildTool(userId))))
@@ -73,7 +71,6 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest {
 
         Long toolId = extractIdFromLocation(toolResult);
 
-        // 3. Update tool
         ToolDto updatedTool = buildTool(userId);
         updatedTool.setToolId(toolId);
         updatedTool.setToolName("Hammer XL");
@@ -84,12 +81,10 @@ class FullWorkflowIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("Tool updated successfully"));
 
-        // 4. Delete tool
         mockMvc.perform(delete("/api/tools/" + toolId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("Tool deleted successfully"));
 
-        // 5. Delete user
         mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMsg").value("User deleted successfully"));

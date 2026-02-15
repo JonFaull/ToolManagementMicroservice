@@ -41,14 +41,11 @@ class UserControllerTest {
         return user;
     }
 
-    // ---------------------------------------------------------
-    // CREATE USER
-    // ---------------------------------------------------------
     @Test
     void createUser_returns201() throws Exception {
         UserDto inputDto = buildValidUser();
-        inputDto.setUserId(null); // simulate input with no ID
-        UserDto savedDto = buildValidUser(); // this one has ID 1
+        inputDto.setUserId(null);
+        UserDto savedDto = buildValidUser();
 
         when(userService.createUser(any(UserDto.class))).thenReturn(savedDto);
 
@@ -63,10 +60,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.statusMsg").value(UserConstants.MESSAGE_201));
     }
 
-
-    // ---------------------------------------------------------
-    // GET ALL USERS
-    // ---------------------------------------------------------
     @Test
     void getUsers_returnsList() throws Exception {
         when(userService.getAllUsers()).thenReturn(List.of(buildValidUser()));
@@ -77,9 +70,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].name").value("John Doe"));
     }
 
-    // ---------------------------------------------------------
-    // GET USER BY ID
-    // ---------------------------------------------------------
     @Test
     void getUserById_returnsUser() throws Exception {
         when(userService.getUserById(1L)).thenReturn(buildValidUser());
@@ -98,9 +88,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
-    // ---------------------------------------------------------
-    // GET USER BY EMAIL
-    // ---------------------------------------------------------
     @Test
     void getUserByEmail_returnsUser() throws Exception {
         when(userService.getUserByEmail("john@example.com")).thenReturn(buildValidUser());
@@ -119,9 +106,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
-    // ---------------------------------------------------------
-    // GET USERS BY DOB RANGE
-    // ---------------------------------------------------------
     @Test
     void getUsersByDOBRange_returnsList() throws Exception {
         when(userService.getUsersByDOBRange(any(), any()))
@@ -152,9 +136,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"));
     }
 
-    // ---------------------------------------------------------
-    // UPDATE USER
-    // ---------------------------------------------------------
     @Test
     void updateUserDetails_returns200_whenUpdated() throws Exception {
         UserDto dto = buildValidUser();
@@ -186,9 +167,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
     }
 
-    // ---------------------------------------------------------
-    // DELETE USER
-    // ---------------------------------------------------------
     @Test
     void deleteUser_returns200_whenDeleted() throws Exception {
         when(userService.deleteUser(1L)).thenReturn(true);

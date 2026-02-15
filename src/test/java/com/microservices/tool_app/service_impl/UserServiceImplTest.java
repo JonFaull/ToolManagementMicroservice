@@ -46,9 +46,6 @@ class UserServiceImplTest {
         user.setDateOfBirth(LocalDate.of(1990, 1, 1));
     }
 
-    // ---------------------------------------------------------
-    // CREATE USER
-    // ---------------------------------------------------------
     @Test
     void createUser_savesUserSuccessfully() {
         when(usersRepository.save(any(User.class))).thenReturn(user);
