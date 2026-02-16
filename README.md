@@ -4,4 +4,7 @@ Start up instructions:
 Clone to your IDE (I used IntelliJ)
 Set IDE to use Java 17.
 Navigate to: ToolManagementMicroservice\src\main\java\com\microservices\tool_app\ToolAppApplication.java to run.
+
+Open http://localhost:8081/api/users or http://localhost:8082/api/users
+
 Enjoy!
